@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "954587593852",
+    "firebase_url": "https://ibulance-e5767-default-rtdb.firebaseio.com",
+    "project_id": "ibulance-e5767",
+    "storage_bucket": "ibulance-e5767.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954587593852:android:613badad8f2b25cdba1df9",
+        "android_client_info": {
+          "package_name": "com.ibulance.ibulance"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "954587593852-ahccorampcsb844u86bbhs45l4jn707o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ibulance.ibulance",
+            "certificate_hash": "54b885ab85d6b1af8c6e676934e3fd2a548385b6"
+          }
+        },
+        {
+          "client_id": "954587593852-qp1bihl58mqqfr1bvp1lca04576ql9dh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBu3Q4AcGfUDh8Syv8vNm1XoTkzdglWvH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "954587593852-qp1bihl58mqqfr1bvp1lca04576ql9dh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
