@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ibulance/screens/test.dart';
 import 'package:shimmer/shimmer.dart';
 import '../assistants/data.dart';
 import '../assistants/map_key.dart';
@@ -25,7 +26,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
- late GoogleMapController refController;
+  late GoogleMapController refController;
   bool addressUpdated = false;
   late String updated;
   var yourLocationController = TextEditingController();
@@ -38,6 +39,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool markerMovable = true;
 
+  late String distanceText;
+  late int distanceValue;
+  late String durationText;
+  late int durationValue;
+
+  bool loadDestinationData = false;
 
   @override
   void initState() {
@@ -54,21 +61,13 @@ class _HomeScreenState extends State<HomeScreen> {
     zoom: 18,
   );
 
-  final List<Marker> _markers = <Marker>[
-
-    const Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(20.42796133580664, 75.885749655962),
-        infoWindow: InfoWindow(
-          title: 'My Position',
-        ))
-  ];
+  final List<Marker> _markers = <Marker>[];
 
   void getUserCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     _markers.add(Marker(
-        markerId: const MarkerId("2"),
+        markerId: const MarkerId("1"),
         position: LatLng(position.latitude, position.longitude),
         draggable: markerMovable,
         visible: true,
@@ -110,7 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
           scrollGesturesEnabled: true,
           zoomControlsEnabled: true,
           buildingsEnabled: false,
-
+          tiltGesturesEnabled: false,
+          myLocationEnabled: true,
           polylines: polyLineSet,
           onMapCreated: (GoogleMapController controller) {
             _controller.complete(controller);
@@ -128,8 +128,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 controller: yourLocationController,
                 showCursor: false,
                 decoration: InputDecoration(
-                    icon: Stack(alignment: Alignment.center, children: const [
-                    ]),
+                    icon:
+                        Stack(alignment: Alignment.center, children: const []),
                     filled: true,
                     hintText: "Your Location",
                     prefixIcon: const Icon(Icons.fiber_manual_record,
@@ -142,14 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height / 2.5,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height / 2.5,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -202,22 +196,30 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Padding(
                         padding: EdgeInsets.only(left: 40, top: 20, bottom: 10),
                         child: Text(
-                          "Drop History",
+                          "Saved Location",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: Colors.grey[300]!,
-                        period: const Duration(seconds: 2),
-                        child: Column(
-                          children: const [
-                            ShimmerEffect(),
-                            ShimmerEffect(),
-                            ShimmerEffect(),
-                          ],
-                        ),
-                      )
+                      loadDestinationData
+                          ? Column(
+                              children: [
+                                Text(distanceText),
+                                Text(durationText),
+
+                              ],
+                            )
+                          : Shimmer.fromColors(
+                              baseColor: Colors.white,
+                              highlightColor: Colors.grey[300]!,
+                              period: const Duration(seconds: 2),
+                              child: Column(
+                                children: const [
+                                  ShimmerEffect(),
+                                  ShimmerEffect(),
+                                  ShimmerEffect(),
+                                ],
+                              ),
+                            )
                     ]),
               ),
             )
@@ -274,8 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
     controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
     String url =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position
-        .latitude},${position.longitude}&key=${MapKey.key}";
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=${MapKey.key}";
     var response = await RequestApi.getRequestUrl(url);
     yourLocationController.text = response["results"][0]["formatted_address"];
   }
@@ -300,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (result != null) {
         dropLocationController.text = result;
         var done =
-        await OriginDestination(UserData.placeId).getPlaceAddressDetails();
+            await OriginDestination(UserData.placeId).getPlaceAddressDetails();
         if (done) {
           directionDataRequest();
         }
@@ -311,10 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> directionDataRequest() async {
     try {
       String url =
-          "https://maps.googleapis.com/maps/api/directions/json?origin=${UserData
-          .originLatitude},${UserData.originLongitude}&destination=${UserData
-          .destinationLatitude},${UserData.destinationLongitude}&key=${MapKey
-          .key}";
+          "https://maps.googleapis.com/maps/api/directions/json?origin=${UserData.originLatitude},${UserData.originLongitude}&destination=${UserData.destinationLatitude},${UserData.destinationLongitude}&key=${MapKey.key}";
 
       http.Response response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -322,51 +320,70 @@ class _HomeScreenState extends State<HomeScreen> {
         var responsed = jsonDecode(jsonData);
         if (responsed["status"] == "OK") {
           var encodedPoint =
-          responsed["routes"][0]["overview_polyline"]["points"];
-          responsed["routes"][0]["legs"][0]["distance"]["text"];
-          responsed["routes"][0]["legs"][0]["distance"]["value"];
-          responsed["routes"][0]["legs"][0]["duration"]["text"];
-          responsed["routes"][0]["legs"][0]["duration"]["value"];
+              responsed["routes"][0]["overview_polyline"]["points"];
+          distanceText = responsed["routes"][0]["legs"][0]["distance"]["text"];
+
+          distanceValue =
+              responsed["routes"][0]["legs"][0]["distance"]["value"];
+          durationText = responsed["routes"][0]["legs"][0]["duration"]["text"];
+
+          durationValue =
+              responsed["routes"][0]["legs"][0]["duration"]["value"];
           PolylinePoints points = PolylinePoints();
           List<PointLatLng> decodePolyline =
-          points.decodePolyline(encodedPoint);
+              points.decodePolyline(encodedPoint);
           pLineCoordinates.clear();
+
           if (decodePolyline.isNotEmpty) {
             for (var pointLatLng in decodePolyline) {
               pLineCoordinates
                   .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
             }
             polyLineSet.clear();
+            _markers.add(Marker(
+              markerId: const MarkerId("2"),
+              position: LatLng(
+                  UserData.destinationLatitude, UserData.destinationLongitude),
+              visible: true,
+              infoWindow: const InfoWindow(title: "Destination"),
+            ));
             setState(() {
+              loadDestinationData = true;
               Polyline polyline = Polyline(
                   polylineId: const PolylineId("PolylineID"),
-                  color: Colors.black,
-                  jointType: JointType.round,
+                  color: Colors.black87,
+                  jointType: JointType.bevel,
                   points: pLineCoordinates,
-                  width: 5,
-                  startCap: Cap.roundCap,
-                  endCap: Cap.roundCap,
+                  width: 3,
+                  startCap: Cap.squareCap,
+                  endCap: Cap.squareCap,
                   geodesic: true);
               polyLineSet.add(polyline);
               markerMovable = false;
-
             });
-    refController.animateCamera(CameraUpdate.newLatLngBounds(LatLngBounds(
-    southwest: LatLng(
-        UserData.originLatitude <= UserData.destinationLatitude
-            ? UserData.originLatitude
-            : UserData.destinationLatitude,
-        UserData.originLongitude <= UserData.destinationLongitude
-            ? UserData.originLongitude
-            : UserData.destinationLongitude),
-    northeast: LatLng(
-        UserData.originLatitude <= UserData.destinationLatitude
-            ? UserData.destinationLatitude
-            : UserData.originLatitude,
-        UserData.originLongitude <= UserData.destinationLongitude
-            ? UserData.destinationLongitude
-            : UserData.originLongitude)),100),);
-
+            refController.animateCamera(
+              CameraUpdate.newLatLngBounds(
+                  LatLngBounds(
+                      southwest: LatLng(
+                          UserData.originLatitude <=
+                                  UserData.destinationLatitude
+                              ? UserData.originLatitude
+                              : UserData.destinationLatitude,
+                          UserData.originLongitude <=
+                                  UserData.destinationLongitude
+                              ? UserData.originLongitude
+                              : UserData.destinationLongitude),
+                      northeast: LatLng(
+                          UserData.originLatitude <=
+                                  UserData.destinationLatitude
+                              ? UserData.destinationLatitude
+                              : UserData.originLatitude,
+                          UserData.originLongitude <=
+                                  UserData.destinationLongitude
+                              ? UserData.destinationLongitude
+                              : UserData.originLongitude)),
+                  100),
+            );
           }
         }
       }
