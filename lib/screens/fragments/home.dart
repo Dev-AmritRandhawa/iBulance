@@ -138,7 +138,7 @@ class _HomeState extends State<Home> {
         ),
         Positioned(
           right: 20.0,
-          bottom: 100,
+          bottom: 50,
           child: FloatingActionButton(
             onPressed: () {
               getUserCurrentLocation();

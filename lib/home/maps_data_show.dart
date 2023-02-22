@@ -23,60 +23,51 @@ class _MapsDataShowState extends State<MapsDataShow> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
         resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Column(
             children: [
+
               Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.only(right: 10),
                   child: TextButton(onPressed: () {
                     Navigator.pop(context);
-                  }, child: const Text("Go Back",style: TextStyle(fontSize: 18),)),
+                  }, child: const Text("Close",style: TextStyle(fontSize: 18),)),
                 )
               ]),
-
-              Container(
-                margin: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 25.0,
-                      spreadRadius: 25,
-                      offset: Offset(
-                        -10,
-                        -10,
-                      ),
-                    )
-                  ],
-                ),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
                 child: TextField(
+
                   controller: controller,
                   onChanged: (value) {
                     _placeApiRequest(value, MapKey.key);
                   },
                   showCursor: false,
+
                   decoration: InputDecoration(
-                      filled: true,
-                      hintText: "Search Destination",
                       suffixIcon: GestureDetector(
                           onTap: () {
                             controller.clear();
                           },
                           child:
-                              const Icon(Icons.close, color: Colors.black54)),
+                          const Icon(Icons.close, color: Colors.black54)),
+                      filled: true,
+                      hintText: "Search Destination",
                       prefixIcon: const Icon(Icons.fiber_manual_record,
-                          color: Colors.redAccent, size: 20),
-                      fillColor: Colors.white60,
+                          color: Colors.green, size: 20),
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(45),
+                        borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       )),
                 ),
               ),
+
               (listData.isNotEmpty)
                   ? Padding(
                       padding: const EdgeInsets.all(10.0),
