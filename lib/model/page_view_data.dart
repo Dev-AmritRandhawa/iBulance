@@ -9,15 +9,20 @@ class Slide {
 final slideList = [
   Slide(
       title: "Book Online",
-      description: "Book an ambulance online with \nlive\nTracking",
+      description: "Book an ambulance online with \nlive Tracking",
       image: "assets/gettingStart.png"),
   Slide(
       title: "Book Online",
-      description: "Book an ambulance online with \nlive\nTracking",
+      description: "Book an ambulance online with \nlive Tracking",
       image: "assets/gettingStart2.png"),
   Slide(
       title: "Book Online",
       description:
-      "Book an ambulance online with \n live\nTracking",
+      "Book an ambulance online with \nlive Tracking",
       image: "assets/gettingStart3.png"),
+  Slide(
+      title: "Allow Permission",
+      description:
+      "To server you better Please allow \nLocation service",
+      image: "assets/iBulance.png"),
 ];

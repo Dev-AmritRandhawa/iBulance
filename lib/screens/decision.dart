@@ -68,7 +68,7 @@ class DecisionState extends State<Decision> {
                         repeatForever: false,
                         animatedTexts: [
                           TypewriterAnimatedText(textAlign: TextAlign.center,
-                              'Manage Your \n Emergencies \n Simply.',
+                              'Manage Your Emergencies \n Simply.',
                               textStyle: const TextStyle(
                                   color: Colors.black87,
                                   fontWeight: FontWeight.w600,

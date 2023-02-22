@@ -32,14 +32,14 @@ class SlideItem extends StatelessWidget {
                   children: [
                     Text(
                       slideList[index].title,
-                      style: const TextStyle(fontSize: 22, fontFamily: "QuickSand",color: Colors.black,fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 22,color: Colors.black,fontWeight: FontWeight.bold),
 
                     ),
 
                     Text(slideList[index].description,
                           style: const TextStyle(
                               fontSize: 18,
-                              fontFamily: "QuickSand",
+
                               color: Colors.black54,),
 
                     )

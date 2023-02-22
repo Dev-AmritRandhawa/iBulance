@@ -7,7 +7,7 @@ import 'map_key.dart';
 
 
 class OriginDestination {
-final String placeId;
+  final String placeId;
 
 
   static bool responseState = false;
@@ -33,9 +33,9 @@ final String placeId;
         var decoder = jsonDecode(jsonData);
         if (decoder["status"] == "OK") {
           UserData.destinationLatitude =
-              decoder["result"]["geometry"]["location"]["lat"];
+          decoder["result"]["geometry"]["location"]["lat"];
           UserData.destinationLongitude =
-              decoder["result"]["geometry"]["location"]["lng"];
+          decoder["result"]["geometry"]["location"]["lng"];
           return true;
         } else {
           if (decoder == "failed") {

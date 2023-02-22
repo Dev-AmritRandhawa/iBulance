@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:ibulance/screens/phone_otp.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,9 +62,9 @@ class GettingStartedScreenState extends State<GettingStartedScreen> {
           ),
           bottomSheet: _currentPage != slideList.length - 1
               ? Container(
+            margin: const EdgeInsets.all(10),
                 decoration:  BoxDecoration(
                     borderRadius: BorderRadius.circular(10),color: Colors.redAccent,),
-
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -97,27 +98,55 @@ class GettingStartedScreenState extends State<GettingStartedScreen> {
               )
               : MaterialButton(
                   onPressed: () async {
-                    userStateSave();
-                    if (Platform.isIOS) {
-                      Navigator.of(context).pushReplacement(CupertinoPageRoute(
-                        builder: (context) =>  const MobileAuthentication(),
-                      ));
-                    } else if (Platform.isAndroid) {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) =>  const MobileAuthentication(),
-                      ));
-                    }
-                  },
+                   if( await permissionCheck()){
+                     userStateSave();
+                     if (Platform.isIOS) {
+                       Navigator.of(context).pushReplacement(CupertinoPageRoute(
+                         builder: (context) =>  const MobileAuthentication(),
+                       ));
+                     } else if (Platform.isAndroid) {
+                       Navigator.of(context).pushReplacement(MaterialPageRoute(
+                         builder: (context) =>  const MobileAuthentication(),
+                       ));
+                     }
+                   }
+                   else{
+                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Location Disabled")));
+                   }
+                    },
                   height: Platform.isIOS ? 70.0 : 50,
                   minWidth: MediaQuery.of(context).size.width,
                   color: Colors.redAccent,
                   child: const Text(
-                    "Next",
+                    "Allow Permission",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 )),
     );
   }
+}
+Future<bool> permissionCheck() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return false;
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      return false;
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    Geolocator.openAppSettings();
+    return false;
+  }
+  return true;
 }
 
 void userStateSave() async {

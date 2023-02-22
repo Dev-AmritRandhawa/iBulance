@@ -5,88 +5,96 @@ import '../assistants/place_prediction.dart';
 import '../assistants/request_api.dart';
 
 class MapsDataShow extends StatefulWidget {
- final double latitude;
- final double longitude;
+  final double latitude;
+  final double longitude;
 
-  const MapsDataShow({super.key, required this.latitude, required this.longitude});
+  const MapsDataShow(
+      {super.key, required this.latitude, required this.longitude});
+
   @override
   State<MapsDataShow> createState() => _MapsDataShowState();
 }
-
 
 class _MapsDataShowState extends State<MapsDataShow> {
   List<PlacePrediction> listData = [];
 
   final TextEditingController controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Column(
-          children: [
-            const SizedBox(
-              height: 50,
-            ),
-            Container(
-              margin: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 25.0,
-                    spreadRadius: 25,
-                    offset: Offset(
-                      -10,
-                      -10,
-                    ),
-                  )
-                ],
-              ),
-              child: TextField(
-                controller: controller,
-                onChanged: (value) {
-                  _placeApiRequest(value, MapKey.key);
-                },
-                showCursor: false,
-                decoration: InputDecoration(
-                    filled: true,
-                    hintText: "Search Destination",
-                    suffixIcon: GestureDetector(onTap: (){
-                      controller.clear();
-                    },child: const Icon(Icons.close, color: Colors.black54)),
-                    prefixIcon: GestureDetector(
-                      onTap: () {
+        body: SafeArea(
+          child: Column(
+            children: [
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton(onPressed: () {
+                    Navigator.pop(context);
+                  }, child: const Text("Go Back",style: TextStyle(fontSize: 18),)),
+                )
+              ]),
 
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(Icons.arrow_back,
-                          color: Colors.redAccent, size: 25),
-                    ),
-                    fillColor: Colors.white60,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(45),
-                      borderSide: BorderSide.none,
-                    )),
+              Container(
+                margin: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 25.0,
+                      spreadRadius: 25,
+                      offset: Offset(
+                        -10,
+                        -10,
+                      ),
+                    )
+                  ],
+                ),
+                child: TextField(
+                  controller: controller,
+                  onChanged: (value) {
+                    _placeApiRequest(value, MapKey.key);
+                  },
+                  showCursor: false,
+                  decoration: InputDecoration(
+                      filled: true,
+                      hintText: "Search Destination",
+                      suffixIcon: GestureDetector(
+                          onTap: () {
+                            controller.clear();
+                          },
+                          child:
+                              const Icon(Icons.close, color: Colors.black54)),
+                      prefixIcon: const Icon(Icons.fiber_manual_record,
+                          color: Colors.redAccent, size: 20),
+                      fillColor: Colors.white60,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(45),
+                        borderSide: BorderSide.none,
+                      )),
+                ),
               ),
-            ),
-            (listData.isNotEmpty)
-                ? Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: ListView.separated(
-                      itemCount: listData.length,
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(),
-                      itemBuilder: (BuildContext context, int index) {
-                        return PredictionTile(placesData: listData[index]);
-                      },
-                      shrinkWrap: true,
-                      physics: const ClampingScrollPhysics(),
-                    ),
-                  )
-                : const Text("We will show data history here")
-          ],
+              (listData.isNotEmpty)
+                  ? Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: ListView.separated(
+                        itemCount: listData.length,
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const Divider(),
+                        itemBuilder: (BuildContext context, int index) {
+                          return PredictionTile(placesData: listData[index]);
+                        },
+                        shrinkWrap: true,
+                        physics: const ClampingScrollPhysics(),
+                      ),
+                    )
+                  :  Container()
+            ],
+          ),
         ));
-
   }
 
   Future<void> _placeApiRequest(String userkeyboardData, String key) async {
@@ -115,7 +123,6 @@ class _MapsDataShowState extends State<MapsDataShow> {
 class PredictionTile extends StatefulWidget {
   final PlacePrediction placesData;
 
-
   const PredictionTile({Key? key, required this.placesData}) : super(key: key);
 
   @override
@@ -129,7 +136,8 @@ class _PredictionTileState extends State<PredictionTile> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        final data  = "${widget.placesData.mainText} ${widget.placesData.secondaryText}";
+        final data =
+            "${widget.placesData.mainText} ${widget.placesData.secondaryText}";
         UserData.placeId = widget.placesData.placeId;
         Navigator.pop(context, data);
       },
@@ -161,5 +169,4 @@ class _PredictionTileState extends State<PredictionTile> {
       ),
     );
   }
-
 }
